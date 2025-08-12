@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+  <script src="https://cdn.jddelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Simulasi KPR Pegawai Bappenas</title>
@@ -39,7 +40,10 @@
           </select>
         </label>
         <label>Golongan
-          <select id="golongan"></select>
+          <label>Upload Excel Gaji/Tukin (.xlsx.xls)
+            <input id="xlsxInput" type="file"accept="xlsx,.xls"/>
+          </label>
+          <select id="Golongan"></select>
         </label>
         <label>Masa Kerja (tahun)
           <input id="masker" type="number" min="0" max="35" value="5" />
