@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simulasi KPR Pegawai Bappenas</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+<header class="header">
+  <div class="brand">
+    <div class="logo">🏛️</div>
+    <div>
+      <h1>Simulasi KPR Pegawai Bappenas</h1>
+      <p class="subtitle">Tab-step • BNI Konvensional &amp; BSI Syariah • Fixed 1–3 th • Floating 4+ • Cash Keras</p>
+    </div>
+  </div>
+  <button id="btnInfo" class="btn ghost">Info</button>
+</header>
+
+<main class="container">
+  <nav class="tabs">
+    <button class="tab active" data-tab="pegawai">1. Data Pegawai</button>
+    <button class="tab" data-tab="rumah">2. Pilih Rumah</button>
+    <button class="tab" data-tab="pembiayaan">3. Pembiayaan</button>
+    <button class="tab" data-tab="hasil">4. Hasil</button>
+  </nav>
+
+  <section id="tab-pegawai" class="tab-panel show">
+    <div class="grid2">
+      <div>
+        <label>Status Pegawai
+          <select id="status">
+            <option value="PNS" selected>PNS</option>
+            <option value="CPNS">CPNS</option>
+            <option value="Non-PNS">Non-PNS</option>
+          </select>
+        </label>
+        <label>Golongan
+          <select id="golongan"></select>
+        </label>
+        <label>Masa Kerja (tahun)
+          <input id="masker" type="number" min="0" max="35" value="5" />
+        </label>
+        <label>Tunjangan Kinerja (override Rp) <small class="muted">Opsional — isi jika beda dari tabel</small>
+          <input id="tukinOverride" type="number" placeholder="contoh 6000000" />
+        </label>
+        <button id="btnHitungGaji" class="btn">Hitung Estimasi Gaji</button>
+      </div>
+      <div id="gajiBox" class="card">
+        <h3>Estimasi Take-Home Pay</h3>
+        <div class="kv"><span>Gaji Pokok</span><strong id="gajiPokok">-</strong></div>
+        <div class="kv"><span>Tunjangan Kinerja</span><strong id="gajiTukin">-</strong></div>
+        <div class="kv total"><span>Total Estimasi</span><strong id="gajiTotal">-</strong></div>
+        <p class="muted">Catatan: angka estimasi dari tabel <code>data/gaji.json</code> dan bisa diubah.</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn next">Lanjut ➜</button>
+    </div>
+  </section>
+
+  <section id="tab-rumah" class="tab-panel">
+    <div class="grid3">
+      <div class="card select" data-harga="400000000" data-nama="Cluster Alamanda | Tipe 36/102">
+        <h4>Cluster Alamanda</h4>
+        <p>Tipe 36/102 • Rp 400 jt</p>
+      </div>
+      <div class="card select" data-harga="500000000" data-nama="Cluster Bluebell | Tipe 36/72">
+        <h4>Cluster Bluebell</h4>
+        <p>Tipe 36/72 • Rp 500 jt</p>
+      </div>
+      <div class="card select" data-harga="700000000" data-nama="New Calathea | Tipe 45/96 ">
+        <h4>New Calathea</h4>
+        <p>Tipe 45/96 • Rp 700 jt</p>
+      </div>
+    </div>
+    <div class="kv" style="margin-top:12px;">
+      <span>Pilihan</span><strong id="rumahPilihan">Belum dipilih</strong>
+    </div>
+    <div class="kv">
+      <span>Harga</span><strong id="rumahHarga">Rp -</strong>
+    </div>
+    <div class="actions">
+      <button class="btn prev">⬅ Kembali</button>
+      <button class="btn next">Lanjut ➜</button>
+    </div>
+  </section>
+
+  <section id="tab-pembiayaan" class="tab-panel">
+    <div class="grid2">
+      <div>
+        <fieldset class="radio-group">
+          <legend>Skema</legend>
+          <label><input type="radio" name="skema" value="BNI" checked /> BNI Konvensional (Anuitas)</label>
+          <label><input type="radio" name="skema" value="BSI" /> BSI Syariah (Murabahah hybrid)</label>
+          <label><input type="radio" name="skema" value="CASH" /> Cash Keras (tanpa cicilan)</label>
+        </fieldset>
+        <div class="grid3">
+          <label>DP (%)<input id="dp" type="number" min="0" max="90" value="20" /></label>
+          <label>Tenor (tahun)<input id="tenor" type="number" min="1" max="30" value="15" /></label>
+          <label>Max Rasio Cicilan (% gaji)<input id="rasioMax" type="number" min="10" max="60" value="30" /></label>
+        </div>
+        <div class="grid2">
+          <label>Rate Fixed Tahun 1–3 (% p.a.)<input id="rateFixed" type="number" step="0.01" value="8.5" /></label>
+          <label>Rate Floating >3 th (% p.a.)<input id="rateFloat" type="number" step="0.01" value="11" /></label>
+        </div>
+        <button id="btnSimulasi" class="btn">Hitung Simulasi</button>
+      </div>
+      <div class="card">
+        <h3>Ringkasan Input</h3>
+        <div class="kv"><span>Harga Rumah</span><strong id="sumHarga">Rp -</strong></div>
+        <div class="kv"><span>Plafon</span><strong id="sumPlafon">Rp -</strong></div>
+        <div class="kv"><span>Skema</span><strong id="sumSkema">-</strong></div>
+        <div class="kv"><span>Tenor</span><strong id="sumTenor">-</strong></div>
+        <div class="kv"><span>DP</span><strong id="sumDP">-</strong></div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn prev">⬅ Kembali</button>
+      <button class="btn next">Lanjut ➜</button>
+    </div>
+  </section>
+
+  <section id="tab-hasil" class="tab-panel">
+    <div id="resultCard" class="card print-area">
+      <h2>Hasil Simulasi</h2>
+      <div class="grid3">
+        <div class="kv"><span>Cicilan 1–3 th</span><strong id="outCicilanFixed">Rp -</strong></div>
+        <div class="kv"><span>Cicilan >3 th</span><strong id="outCicilanFloat">Rp -</strong></div>
+        <div class="kv"><span>Status Kelayakan</span><strong id="outLayak">-</strong></div>
+      </div>
+      <div class="kv"><span>Rasio Cicilan / Gaji</span><strong id="outRasio">-</strong></div>
+      <div class="kv"><span>Sisa Pokok akhir 36 bln</span><strong id="outSisa36">Rp -</strong></div>
+      <div class="kv"><span>Total bayar (estimasi)</span><strong id="outTotalBayar">Rp -</strong></div>
+      <hr/>
+      <h3>Tabel Amortisasi</h3>
+      <div id="tabelWrap" class="table-wrap"></div>
+    </div>
+    <div class="actions">
+      <button class="btn prev">⬅ Kembali</button>
+      <button id="btnPDF" class="btn outline">Export PDF</button>
+    </div>
+  </section>
+</main>
+
+<aside id="drawer" class="drawer">
+  <div class="drawer-inner">
+    <header class="drawer-head">
+      <h3>Informasi Tambahan</h3>
+      <button id="closeDrawer" class="btn ghost">Tutup</button>
+    </header>
+    <div class="drawer-content">
+      <section>
+        <h4>Regulasi Golongan, Masa Kerja, dan Tukin (Bappenas)</h4>
+        <ul>
+          <li>Dasar golongan & MKG PNS (PP 11/2017 dan perubahannya).</li>
+          <li>Dasar tukin Bappenas (Perpres/PMK/Keputusan internal). Tambahkan dokumen jika ada.</li>
+        </ul>
+        <p>Sesuaikan tabel pada <code>data/gaji.json</code>.</p>
+      </section>
+      <section>
+        <h4>Profil Perumahan Parayasa</h4>
+        <ul>
+          <li>Website: <a href="https://parayasa.id" target="_blank">parayasa.id</a></li>
+          <li>Maps: <a href="https://maps.google.com" target="_blank">Lihat lokasi</a></li>
+          <li>Tambahkan gambar & harga di folder <code>assets/</code>.</li>
+        </ul>
+      </section>
+    </div>
+  </div>
+</aside>
+
+<footer class="footer">
+  <small>© 2025 Simulasi KPR Pegawai Bappenas — vPreview</small>
+</footer>
+</body>
+</html>

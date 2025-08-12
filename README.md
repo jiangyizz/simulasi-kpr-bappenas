@@ -1,0 +1,1 @@
+Lihat README di repo. Buka index.html untuk menjalankan lokal.
